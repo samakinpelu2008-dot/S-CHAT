@@ -1,210 +1,162 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>EduGPT – Smart Tutor</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGPT</title>
 
-  <!-- MathJax for rendering maths -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", system-ui, sans-serif;
-    }
+body {
+  margin: 0;
+  background: #f7f7f8;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+}
 
-    body {
-      margin: 0;
-      background: linear-gradient(135deg, #eef2ff, #f8fafc);
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.app {
+  width: 100%;
+  max-width: 800px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
 
-    .app {
-      width: 100%;
-      max-width: 460px;
-      height: 92vh;
-      background: #ffffff;
-      border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+.header {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e5e5e5;
+  font-weight: 600;
+}
 
-    .header {
-      padding: 16px;
-      background: #1e3a8a;
-      color: #fff;
-      text-align: center;
-    }
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
 
-    .header h1 {
-      font-size: 18px;
-      margin: 0;
-    }
+.message {
+  max-width: 70%;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  line-height: 1.5;
+  font-size: 15px;
+  border-radius: 12px;
+  white-space: pre-wrap;
+}
 
-    .header p {
-      font-size: 12px;
-      opacity: 0.8;
-      margin: 4px 0 0;
-    }
+.user {
+  background: #eaeaea;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
 
-    .messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      background: #f9fafb;
-    }
+.bot {
+  background: #f1f1f1;
+  margin-right: auto;
+  border-bottom-left-radius: 4px;
+}
 
-    .bubble {
-      max-width: 85%;
-      padding: 12px 14px;
-      margin-bottom: 12px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.5;
-      word-wrap: break-word;
-    }
+.input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid #e5e5e5;
+}
 
-    .user {
-      background: #2563eb;
-      color: #fff;
-      margin-left: auto;
-      border-bottom-right-radius: 4px;
-    }
+.input-bar input[type="text"] {
+  flex: 1;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #d0d0d0;
+  font-size: 15px;
+  outline: none;
+}
 
-    .bot {
-      background: #e5e7eb;
-      color: #111827;
-      margin-right: auto;
-      border-bottom-left-radius: 4px;
-    }
+.input-bar input[type="file"] {
+  display: none;
+}
 
-    .typing {
-      font-style: italic;
-      opacity: 0.7;
-    }
+.icon-btn {
+  cursor: pointer;
+  font-size: 18px;
+  padding: 6px;
+}
 
-    .input-area {
-      display: flex;
-      gap: 8px;
-      padding: 12px;
-      border-top: 1px solid #e5e7eb;
-      background: #fff;
-    }
-
-    .input-area input {
-      flex: 1;
-      padding: 12px;
-      font-size: 14px;
-      border-radius: 10px;
-      border: 1px solid #d1d5db;
-      outline: none;
-    }
-
-    .input-area button {
-      padding: 0 18px;
-      border: none;
-      border-radius: 10px;
-      background: #1e40af;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .input-area button:hover {
-      background: #1e3a8a;
-    }
-  </style>
+.send-btn {
+  background: #111827;
+  color: #fff;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+</style>
 </head>
+
 <body>
 
-  <div class="app">
-    <div class="header">
-      <h1>EduGPT</h1>
-      <p>Your AI Tutor for Maths & Science</p>
-    </div>
+<div class="app">
+  <div class="header">EduGPT — AI Tutor</div>
 
-    <div class="messages" id="messages">
-      <div class="bubble bot">
-        Hello 👋  
-        Ask me any maths or science question.  
-        <br><br>
-        Example: <br>
-        <b>log⁴3</b>, <b>x² + 3x = 0</b>, <b>√16</b>
-      </div>
-    </div>
-
-    <div class="input-area">
-      <input
-        id="input"
-        type="text"
-        placeholder="Ask a maths question… e.g. log⁴3"
-        autocomplete="off"
-      />
-      <button onclick="send()">Send</button>
+  <div class="messages" id="messages">
+    <div class="message bot">
+      Hi 👋  
+      You can ask maths questions or upload an image of a question.
     </div>
   </div>
 
-  <script>
-    const messages = document.getElementById("messages");
-    const input = document.getElementById("input");
+  <div class="input-bar">
+    <label class="icon-btn">
+      📎
+      <input type="file" id="imageInput" accept="image/*">
+    </label>
 
-    function addMessage(text, type) {
-      const div = document.createElement("div");
-      div.className = "bubble " + type;
-      div.innerHTML = text;
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-      MathJax.typesetPromise();
-    }
+    <input type="text" id="textInput" placeholder="Ask a maths question… e.g. log⁴3">
 
-    function showTyping() {
-      const div = document.createElement("div");
-      div.className = "bubble bot typing";
-      div.id = "typing";
-      div.textContent = "Thinking…";
-      messages.appendChild(div);
-      messages.scrollTop = messages.scrollHeight;
-    }
+    <button class="send-btn" onclick="send()">Send</button>
+  </div>
+</div>
 
-    function removeTyping() {
-      const t = document.getElementById("typing");
-      if (t) t.remove();
-    }
+<script>
+const messages = document.getElementById("messages");
+const textInput = document.getElementById("textInput");
+const imageInput = document.getElementById("imageInput");
 
-    function send() {
-      const text = input.value.trim();
-      if (!text) return;
+function addMessage(text, type) {
+  const div = document.createElement("div");
+  div.className = "message " + type;
+  div.textContent = text;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
 
-      addMessage(text, "user");
-      input.value = "";
+function send() {
+  const text = textInput.value.trim();
+  const image = imageInput.files[0];
 
-      showTyping();
+  if (!text && !image) return;
 
-      // Fake response for now (backend comes next)
-      setTimeout(() => {
-        removeTyping();
-        addMessage(
-          "I understand this as a maths expression. I will solve and explain it step by step once connected to the AI.",
-          "bot"
-        );
-      }, 900);
-    }
+  if (text) addMessage(text, "user");
+  if (image) addMessage("[Image uploaded]", "user");
 
-    input.addEventListener("keydown", e => {
-      if (e.key === "Enter") send();
-    });
-  </script>
+  textInput.value = "";
+  imageInput.value = "";
+
+  setTimeout(() => {
+    addMessage(
+      "I can read maths expressions and images. Once connected to the backend, I will solve and explain step by step.",
+      "bot"
+    );
+  }, 800);
+}
+</script>
 
 </body>
 </html>
