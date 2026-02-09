@@ -3,173 +3,206 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My ChatGPT</title>
+  <title>EduGPT – Smart Tutor</title>
+
+  <!-- MathJax for rendering maths -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
     * {
       box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: "Segoe UI", system-ui, sans-serif;
     }
 
     body {
       margin: 0;
-      background: #f5f7fb;
+      background: linear-gradient(135deg, #eef2ff, #f8fafc);
+      height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
     }
 
-    .chat-container {
+    .app {
       width: 100%;
-      max-width: 420px;
-      height: 90vh;
+      max-width: 460px;
+      height: 92vh;
       background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       overflow: hidden;
     }
 
-    .chat-header {
-      background: #2563eb;
+    .header {
+      padding: 16px;
+      background: #1e3a8a;
       color: #fff;
-      padding: 15px;
       text-align: center;
-      font-weight: bold;
+    }
+
+    .header h1 {
       font-size: 18px;
+      margin: 0;
     }
 
-    .chat-messages {
+    .header p {
+      font-size: 12px;
+      opacity: 0.8;
+      margin: 4px 0 0;
+    }
+
+    .messages {
       flex: 1;
-      padding: 15px;
+      padding: 16px;
       overflow-y: auto;
+      background: #f9fafb;
     }
 
-    .message {
-      max-width: 80%;
-      padding: 10px 14px;
-      margin-bottom: 10px;
-      border-radius: 10px;
+    .bubble {
+      max-width: 85%;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      border-radius: 12px;
       font-size: 14px;
-      line-height: 1.4;
+      line-height: 1.5;
       word-wrap: break-word;
     }
 
     .user {
       background: #2563eb;
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 2px;
+      color: #fff;
+      margin-left: auto;
+      border-bottom-right-radius: 4px;
     }
 
     .bot {
       background: #e5e7eb;
       color: #111827;
-      align-self: flex-start;
-      border-bottom-left-radius: 2px;
-    }
-
-    .chat-input {
-      display: flex;
-      border-top: 1px solid #ddd;
-    }
-
-    .chat-input input {
-      flex: 1;
-      border: none;
-      padding: 15px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .chat-input button {
-      border: none;
-      background: #2563eb;
-      color: white;
-      padding: 0 20px;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .chat-input button:hover {
-      background: #1e4ed8;
+      margin-right: auto;
+      border-bottom-left-radius: 4px;
     }
 
     .typing {
       font-style: italic;
-      font-size: 13px;
       opacity: 0.7;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 8px;
+      padding: 12px;
+      border-top: 1px solid #e5e7eb;
+      background: #fff;
+    }
+
+    .input-area input {
+      flex: 1;
+      padding: 12px;
+      font-size: 14px;
+      border-radius: 10px;
+      border: 1px solid #d1d5db;
+      outline: none;
+    }
+
+    .input-area button {
+      padding: 0 18px;
+      border: none;
+      border-radius: 10px;
+      background: #1e40af;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .input-area button:hover {
+      background: #1e3a8a;
     }
   </style>
 </head>
 <body>
 
-  <div class="chat-container">
-    <div class="chat-header">My ChatGPT</div>
-
-    <div class="chat-messages" id="chatMessages">
-      <div class="message bot">Hi 👋 I’m your AI assistant.</div>
+  <div class="app">
+    <div class="header">
+      <h1>EduGPT</h1>
+      <p>Your AI Tutor for Maths & Science</p>
     </div>
 
-    <div class="chat-input">
+    <div class="messages" id="messages">
+      <div class="bubble bot">
+        Hello 👋  
+        Ask me any maths or science question.  
+        <br><br>
+        Example: <br>
+        <b>log⁴3</b>, <b>x² + 3x = 0</b>, <b>√16</b>
+      </div>
+    </div>
+
+    <div class="input-area">
       <input
+        id="input"
         type="text"
-        id="userInput"
-        placeholder="Type a message..."
+        placeholder="Ask a maths question… e.g. log⁴3"
         autocomplete="off"
       />
-      <button onclick="sendMessage()">Send</button>
+      <button onclick="send()">Send</button>
     </div>
   </div>
 
   <script>
-    const chatMessages = document.getElementById("chatMessages");
-    const userInput = document.getElementById("userInput");
+    const messages = document.getElementById("messages");
+    const input = document.getElementById("input");
 
-    function addMessage(text, sender) {
-      const msg = document.createElement("div");
-      msg.classList.add("message", sender);
-      msg.textContent = text;
-      chatMessages.appendChild(msg);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+    function addMessage(text, type) {
+      const div = document.createElement("div");
+      div.className = "bubble " + type;
+      div.innerHTML = text;
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
+      MathJax.typesetPromise();
     }
 
     function showTyping() {
-      const typing = document.createElement("div");
-      typing.classList.add("message", "bot", "typing");
-      typing.id = "typing";
-      typing.textContent = "AI is typing...";
-      chatMessages.appendChild(typing);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      const div = document.createElement("div");
+      div.className = "bubble bot typing";
+      div.id = "typing";
+      div.textContent = "Thinking…";
+      messages.appendChild(div);
+      messages.scrollTop = messages.scrollHeight;
     }
 
     function removeTyping() {
-      const typing = document.getElementById("typing");
-      if (typing) typing.remove();
+      const t = document.getElementById("typing");
+      if (t) t.remove();
     }
 
-    function sendMessage() {
-      const text = userInput.value.trim();
+    function send() {
+      const text = input.value.trim();
       if (!text) return;
 
       addMessage(text, "user");
-      userInput.value = "";
+      input.value = "";
 
       showTyping();
 
-      // TEMP FAKE RESPONSE (backend comes next)
+      // Fake response for now (backend comes next)
       setTimeout(() => {
         removeTyping();
-        addMessage("This is where the AI response will appear.", "bot");
-      }, 1000);
+        addMessage(
+          "I understand this as a maths expression. I will solve and explain it step by step once connected to the AI.",
+          "bot"
+        );
+      }, 900);
     }
 
-    userInput.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") {
-        sendMessage();
-      }
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") send();
     });
   </script>
 
