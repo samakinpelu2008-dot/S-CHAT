@@ -13,12 +13,15 @@
         overflow: hidden;
     }
 
-    /* Video background placeholder */
-    #video-layer {
+    /* Video iframe fills the screen */
+    #video-layer iframe {
         width: 100%;
         height: 100%;
-        background: url('https://images.unsplash.com/photo-1595433562696-65a45f27a8b8?auto=format&fit=crop&w=1400&q=80') center/cover no-repeat;
-        position: relative;
+        border: none;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 0;
     }
 
     /* Scoreboard */
@@ -114,6 +117,13 @@
 <body>
 
 <div id="video-layer">
+    <!-- YouTube video embed -->
+    <iframe 
+        src="https://www.youtube.com/embed/dMGsqhl1BbM?autoplay=1&controls=0&rel=0&modestbranding=1" 
+        allow="autoplay; encrypted-media" 
+        allowfullscreen>
+    </iframe>
+
     <!-- Scoreboard -->
     <div id="scoreboard">
         <div class="team" id="team1">
@@ -181,10 +191,10 @@ function showOverlay(name, logoUrl) {
     setTimeout(()=>{ overlay.style.display = 'none'; },5000);
 }
 
-// Simulate events based on your YouTube match
+// Start timer
 startTimer();
 
-// 30s: Goal MUN
+// Simulated events using the YouTube match example
 setTimeout(()=>{
     score1++;
     document.getElementById('score').textContent = `${score1} - ${score2}`;
@@ -192,13 +202,11 @@ setTimeout(()=>{
     showOverlay('Manchester United', 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg');
 },30000);
 
-// 60s: Yellow card MCI
 setTimeout(()=>{
     showEvent('YELLOW CARD', 'blue', 'De Bruyne', '01:00');
     showOverlay('Manchester City', 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg');
 },60000);
 
-// 90s: Goal MCI
 setTimeout(()=>{
     score2++;
     document.getElementById('score').textContent = `${score1} - ${score2}`;
@@ -206,11 +214,11 @@ setTimeout(()=>{
     showOverlay('Manchester City', 'https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg');
 },90000);
 
-// 120s: Red card MUN
 setTimeout(()=>{
     showEvent('RED CARD', 'red', 'Martial', '02:00');
     showOverlay('Manchester United', 'https://upload.wikimedia.org/wikipedia/en/7/7a/Manchester_United_FC_crest.svg');
 },120000);
+
 </script>
 
 </body>
