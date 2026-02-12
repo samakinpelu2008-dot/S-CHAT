@@ -1,95 +1,191 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>HistoryHub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-
-  <!-- Firebase CDN -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CP Football Team Registration Form (Girls)</title>
   <style>
-    body { font-family: Arial; margin: 0; padding: 20px; }
-    .card { padding: 15px; border: 1px solid #ddd; margin: 10px 0; border-radius: 8px; }
-    .hidden { display: none; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; }
-    .profile { width: 40px; height: 40px; border-radius: 50%; background: black; color: white; display:flex; align-items:center; justify-content:center; font-weight:bold; }
-    button { padding: 10px; border-radius: 6px; border: none; cursor: pointer; }
-    .blue { background: blue; color: white; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    h2 {
+      text-align: center;
+      color: #34495e;
+      font-weight: normal;
+      font-size: 18px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="email"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+    }
+    .checkbox-group, .radio-group {
+      margin-top: 10px;
+    }
+    input[type="checkbox"], input[type="radio"] {
+      margin-right: 10px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #2c3e50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #34495e;
+    }
+    .optional {
+      font-weight: normal;
+      font-style: italic;
+      color: #7f8c8d;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>CP Football Team Registration Form</h1>
+    <h2>(Girls)</h2>
+    <form id="registrationForm">
+      
+      <label>1. Full Name *</label>
+      <input type="text" name="fullname" required>
 
-<div class="topbar">
-  <h2>HistoryHub</h2>
-  <div id="profile" class="profile hidden"></div>
-</div>
+      <label>2. Nickname <span class="optional">(Optional)</span></label>
+      <input type="text" name="nickname">
 
-<input type="text" id="search" placeholder="Search books..." />
+      <label>3. Age *</label>
+      <input type="number" name="age" required>
 
-<div id="books"></div>
+      <label>4. Phone Number *</label>
+      <input type="text" name="phone" required>
 
-<button id="loginBtn" class="blue">Sign in with Google</button>
+      <label>5. Email Address <span class="optional">(Optional but advised)</span></label>
+      <input type="email" name="email">
 
-<script type="module">
+      <label>6. Preferred Position *</label>
+      <select name="position" required>
+        <option value="">Select Position</option>
+        <option>Goalkeeper</option>
+        <option>Center Back</option>
+        <option>Right Back</option>
+        <option>Left Back</option>
+        <option>Defensive Midfielder</option>
+        <option>Central Midfielder</option>
+        <option>Attacking Midfielder</option>
+        <option>Right Wing</option>
+        <option>Left Wing</option>
+        <option>Striker</option>
+      </select>
 
-// Firebase Modular CDN version
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+      <label>7. Secondary Position *</label>
+      <select name="secondaryPosition" required>
+        <option value="">Select Position</option>
+        <option>Goalkeeper</option>
+        <option>Center Back</option>
+        <option>Right Back</option>
+        <option>Left Back</option>
+        <option>Defensive Midfielder</option>
+        <option>Central Midfielder</option>
+        <option>Attacking Midfielder</option>
+        <option>Right Wing</option>
+        <option>Left Wing</option>
+        <option>Striker</option>
+      </select>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyD0P7scCvlcPPPIACYE1nS4-Gmy27ophuM",
-  authDomain: "historyhub-4cfda.firebaseapp.com",
-  projectId: "historyhub-4cfda",
-  storageBucket: "historyhub-4cfda.firebasestorage.app",
-  messagingSenderId: "422922716352",
-  appId: "1:422922716352:web:178b0a0f81d6bd94829925"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-const loginBtn = document.getElementById("loginBtn");
-const profileDiv = document.getElementById("profile");
-const booksDiv = document.getElementById("books");
-
-const provider = new GoogleAuthProvider();
-
-loginBtn.onclick = () => {
-  signInWithPopup(auth, provider);
-};
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loginBtn.style.display = "none";
-    profileDiv.classList.remove("hidden");
-    profileDiv.innerText = user.displayName.charAt(0).toUpperCase();
-  }
-});
-
-async function loadBooks() {
-  const querySnapshot = await getDocs(collection(db, "books"));
-  booksDiv.innerHTML = "";
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    booksDiv.innerHTML += `
-      <div class="card">
-        <h3>${data.title}</h3>
-        <p>${data.category}</p>
+      <label>8. Dominant Foot *</label>
+      <div class="radio-group">
+        <input type="radio" name="foot" value="Right" required> Right
+        <input type="radio" name="foot" value="Left"> Left
+        <input type="radio" name="foot" value="Both"> Both
       </div>
-    `;
-  });
-}
 
-loadBooks();
+      <label>9. Height *</label>
+      <div class="radio-group">
+        <input type="radio" name="height" value="Short" required> Short
+        <input type="radio" name="height" value="Medium"> Medium
+        <input type="radio" name="height" value="Tall"> Tall
+      </div>
 
-</script>
+      <label>10. Weight <span class="optional">(Optional)</span></label>
+      <input type="number" name="weight">
 
+      <label>11. Jersey Number Preference <span class="optional">(Optional)</span></label>
+      <input type="number" name="jerseyNumber">
+
+      <label>12. Years of Playing Experience <span class="optional">(Optional)</span></label>
+      <input type="number" name="experience">
+
+      <label>13. Are you available for weekly training? *</label>
+      <div class="radio-group">
+        <input type="radio" name="weeklyTraining" value="Yes" required> Yes
+        <input type="radio" name="weeklyTraining" value="No"> No
+      </div>
+
+      <label>14. Are you available for weekend matches? *</label>
+      <div class="radio-group">
+        <input type="radio" name="weekendMatches" value="Yes" required> Yes
+        <input type="radio" name="weekendMatches" value="No"> No
+      </div>
+
+      <label>15. Why do you want to join the team? *</label>
+      <textarea name="reason" rows="4" required></textarea>
+
+      <label>16. I confirm all information provided is correct *</label>
+      <div class="checkbox-group">
+        <input type="checkbox" name="confirm" required> I Confirm
+      </div>
+
+      <label>17. I agree to follow team rules and disciplinary actions *</label>
+      <div class="checkbox-group">
+        <input type="checkbox" name="rules" required> I Agree
+      </div>
+
+      <label>18. I agree to take financial responsibility for team dues, kits, fines, and contributions *</label>
+      <div class="checkbox-group">
+        <input type="checkbox" name="financial" required> I Agree
+      </div>
+
+      <button type="submit">Submit Registration</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("registrationForm").addEventListener("submit", function(e){
+      e.preventDefault();
+      alert("Thank you! Your registration has been submitted.");
+      this.reset();
+    });
+  </script>
 </body>
 </html>
