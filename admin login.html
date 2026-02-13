@@ -4,46 +4,13 @@
   <title>CPE Admin Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial;
-      background: #f4f6f9;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .login-box {
-      background: white;
-      padding: 30px;
-      width: 300px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-    }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 15px;
-      background: #2c3e50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
-
-    .error {
-      color: red;
-      margin-top: 10px;
-    }
+    body { font-family: Arial; background:#f4f6f9; display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+    .login-box { background:white; padding:30px; width:300px; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+    input { width:100%; padding:10px; margin-top:10px; }
+    button { width:100%; padding:10px; margin-top:15px; background:#2c3e50; color:white; border:none; cursor:pointer; }
+    .error { color:red; margin-top:10px; }
   </style>
 </head>
-
 <body>
 
 <div class="login-box">
@@ -55,12 +22,11 @@
 </div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyD0P7scCvlcPPPIACYE1nS4-Gmy27ophuM",
   authDomain: "historyhub-4cfda.firebaseapp.com",
   projectId: "historyhub-4cfda",
   storageBucket: "historyhub-4cfda.firebasestorage.app",
@@ -76,14 +42,9 @@ window.login = function() {
   const password = document.getElementById("password").value;
 
   signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      window.location.href = "admin-dashboard.html";
-    })
-    .catch((error) => {
-      document.getElementById("error").innerText = error.message;
-    });
+    .then(() => { window.location.href = "admin-dashboard.html"; })
+    .catch((error) => { document.getElementById("error").innerText = error.message; });
 }
-
 </script>
 
 </body>
