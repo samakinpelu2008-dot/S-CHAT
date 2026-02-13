@@ -4,31 +4,54 @@
   <title>CPE Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial; background:#f4f6f9; padding:20px; margin:0; }
-    table { width:100%; border-collapse:collapse; background:white; }
-    th, td { padding:10px; border:1px solid #ddd; }
-    th { background:#2c3e50; color:white; }
-    button { padding:5px 10px; margin:2px; border:none; cursor:pointer; border-radius:4px; }
-    .approve { background:green; color:white; }
-    .reject { background:red; color:white; }
+    body {
+      font-family: Arial;
+      background: #f4f6f9;
+      padding: 15px;
+      margin: 0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+
+    .card {
+      background: white;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+
+    .details {
+      display: none;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .status {
+      font-weight: bold;
+      margin-top: 5px;
+    }
+
+    button {
+      padding: 6px 10px;
+      margin: 5px 5px 0 0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .approve { background: green; color: white; }
+    .reject { background: red; color: white; }
   </style>
 </head>
 <body>
 
 <h1>CPE Girls Team Dashboard</h1>
-
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Age</th>
-      <th>Position</th>
-      <th>Status</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody id="playersTable"></tbody>
-</table>
+<div id="playersContainer"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -58,35 +81,61 @@ onAuthStateChanged(auth, (user) => {
 
 async function loadPlayers() {
   const querySnapshot = await getDocs(collection(db, "CP_Girls_Team_Registrations"));
-  const table = document.getElementById("playersTable");
-  table.innerHTML = "";
+  const container = document.getElementById("playersContainer");
+  container.innerHTML = "";
 
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const status = data.status || "Pending";
 
-    const row = `
-      <tr>
-        <td>${data.fullname}</td>
-        <td>${data.age}</td>
-        <td>${data.position}</td>
-        <td>${status}</td>
-        <td>
-          <button class="approve" onclick="updateStatus('${docSnap.id}', 'Approved')">Approve</button>
-          <button class="reject" onclick="updateStatus('${docSnap.id}', 'Rejected')">Reject</button>
-        </td>
-      </tr>
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <strong>${data.fullname}</strong>
+      <div class="status">Status: ${status}</div>
+      <div class="details">
+        <p><strong>Age:</strong> ${data.age}</p>
+        <p><strong>Phone:</strong> ${data.phone}</p>
+        <p><strong>Email:</strong> ${data.email || "N/A"}</p>
+        <p><strong>Position:</strong> ${data.position}</p>
+        <p><strong>Secondary:</strong> ${data.secondaryPosition}</p>
+        <p><strong>Foot:</strong> ${data.foot}</p>
+        <p><strong>Height:</strong> ${data.height}</p>
+        <p><strong>Training:</strong> ${data.weeklyTraining}</p>
+        <p><strong>Weekend:</strong> ${data.weekendMatches}</p>
+        <p><strong>Reason:</strong> ${data.reason}</p>
+        <button class="approve">Approve</button>
+        <button class="reject">Reject</button>
+      </div>
     `;
 
-    table.innerHTML += row;
+    const details = card.querySelector(".details");
+
+    card.addEventListener("click", () => {
+      details.style.display =
+        details.style.display === "block" ? "none" : "block";
+    });
+
+    card.querySelector(".approve").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await updateDoc(doc(db, "CP_Girls_Team_Registrations", docSnap.id), {
+        status: "Approved"
+      });
+      loadPlayers();
+    });
+
+    card.querySelector(".reject").addEventListener("click", async (e) => {
+      e.stopPropagation();
+      await updateDoc(doc(db, "CP_Girls_Team_Registrations", docSnap.id), {
+        status: "Rejected"
+      });
+      loadPlayers();
+    });
+
+    container.appendChild(card);
   });
 }
-
-window.updateStatus = async function(id, newStatus) {
-  const playerRef = doc(db, "CP_Girls_Team_Registrations", id);
-  await updateDoc(playerRef, { status: newStatus });
-  loadPlayers();
-};
 </script>
 
 </body>
